@@ -1,0 +1,1 @@
+alter table dbo.customers drop constraint ck_customers_sales_positive

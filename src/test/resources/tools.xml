@@ -1,0 +1,27 @@
+<tools>
+
+    <tool id="sync-test" title="DBMaster::Test Model Synchronization">
+        <description>Test model synchronization</description>
+        <output  script="sync-test.groovy" type="html" />
+    </tool>
+
+    <tool id="sync-test2" title="DBMaster::Test Model Synchronization 2">
+        <description>Test model synchronization 2</description>
+        <parameters>
+            <parameter name="p_model_name" type="string"  required="true" title="Model Name" />
+            <parameter name="p_model_version" type="string" required="true" title="Model Version" />
+        </parameters>
+        <output  script="sync-test-2.groovy" type="html" />
+    </tool>
+
+    <tool id="sync-test3" title="DBMaster::Test Model Deletion">
+        <description>Test model deletion</description>
+        <parameters>
+            <parameter name="p_model_name" type="string"  required="true" title="Model Name" />
+            <parameter name="p_model_version" type="string" required="true" title="Model Version" />
+        </parameters>
+            
+        <output  script="test-model-deletion.groovy" type="html" />
+    </tool>
+
+</tools>

@@ -1,0 +1,1 @@
+alter table dbo.customers drop constraint df_rating_five

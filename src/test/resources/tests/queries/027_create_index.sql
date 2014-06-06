@@ -1,0 +1,1 @@
+create nonclustered index idx_customers_rating on dbo.customers (rating)

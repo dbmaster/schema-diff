@@ -1,0 +1,44 @@
+<tools>
+    <tool id="schema-diff" title="Schema diff" projectTypes="inventory">
+
+        <description>Compares structures of two databases</description>
+        <parameters>
+            <parameter name="p_source_database" title="Source Database" type="string" 
+                       required="true"  suggestion="project_databases" width="400"  />
+
+            <parameter name="p_target_database" title="Target Database" 
+                       type="string" required="true"  
+                       suggestion="project_databases" width="400"  />
+
+          <!--
+            <parameter name="p_exclude_objects" title="Exclude Objects" type="string" required="false"
+                       multiple="true">
+                <values>
+                    <string>Tables</string>
+                    <string>Views</string>
+                    <string>Procedures</string>
+                    <string>Columns</string>
+                    <string>Parameters</string>
+                    <string>Indexes</string>
+                    <string>Constraints</string>
+                    <string>Foreign Keys</string>
+                </values>
+            </parameter>
+
+              -->
+        </parameters>
+        <output  script="schema-diff.groovy" type="html" />
+    </tool>
+    
+    <tool id="mass-schema-diff" title="Schema diff (multi)" projectTypes="inventory">
+        <description>Mass Model Synchronization</description>
+        <parameters>
+            <!-- parameter name="p_model_prefix" type="string" required="false" title="Model Name Prefix" / -->
+            <parameter name="p_storage_folder" type="string" required="true"  title="Storage Folder"  width="200" />
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="200" />
+            <!-- parameter name="p_email" type="string" required="true" title="Email" / -->
+        </parameters>
+
+        <output  script="mass-schema-diff.groovy" type="html" />
+    </tool>
+</tools>
