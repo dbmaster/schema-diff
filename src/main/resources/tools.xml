@@ -31,14 +31,22 @@
     </tool>
     
     <tool id="mass-schema-diff" title="Schema diff (multi)" projectTypes="inventory">
-        <description>Mass Model Synchronization</description>
+        <description>Mass Database Synchronization</description>
         <parameters>
-            <!-- parameter name="p_model_prefix" type="string" required="false" title="Model Name Prefix" / -->
             <parameter name="p_storage_folder" type="string" required="true"  title="Storage Folder"  width="200" />
-            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="200" />
-            <!-- parameter name="p_email" type="string" required="true" title="Email" / -->
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
         </parameters>
 
         <output  script="mass-schema-diff.groovy" type="html" />
+    </tool>
+
+    <tool id="schema-history" title="Schema diff (history)" projectTypes="inventory">
+        <description>Displays schema(s) change history</description>
+
+        <parameters>
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+        </parameters>
+
+        <output  script="schema-history.groovy" type="html" />
     </tool>
 </tools>
