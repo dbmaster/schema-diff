@@ -93,6 +93,7 @@ for (Database db:invService.getDatabaseList(request)) {
             def targetModel = modelService.fetchModel(model.getConnectionName(), model.getOptions())
             logger.debug("Time is ${sdf.format(new Date())} (comparing model)")
             def syncSession = modelService.compareModel(model, targetModel)
+            syncSession.setParameter("longText", "Procedure.Source;View.Source;Function.Source")
 
             if (syncSession.getSyncResult().getChangeType() != ChangeType.EQUALS){
                 logger.debug("Time is ${sdf.format(new Date())} (generate sync)")

@@ -1,6 +1,7 @@
 import com.branegy.dbmaster.database.api.ModelService
 import com.branegy.dbmaster.model.*
 import io.dbmaster.sync.*
+import com.branegy.dbmaster.sync.api.SyncService;
 
 modelService = dbm.getService(ModelService.class)
 
@@ -42,6 +43,6 @@ sync_session.setParameter("longText", "Procedure.Source;View.Source;Function.Sou
 
 logger.info("Generating report")
 
-println new PreviewGenerator(true).generatePreview(sync_session)
+println dbm.getService(SyncService.class).generateSyncSessionPreviewHtml(sync_session, true)
 
 logger.info("Comparison completed sucessfully")
