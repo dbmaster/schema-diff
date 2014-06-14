@@ -32,17 +32,9 @@ logger.info("Loading target database")
 targetModel = modelService.fetchModel(target_server, target_options)
 
 logger.info("Comparing databases")
-
-def sync_session = new ModelSyncSession(dbm)
-
-sync_session.sourceModel = sourceModel
-sync_session.syncObjects(sourceModel, targetModel)
-sync_session.setParameter("title", "Model Synchronization")
-// TODO (implement) sync_session.setParameter("exclude_objects", p_exclude_objects==null ? "" : p_exclude_objects.join(","))
-sync_session.setParameter("longText", "Procedure.Source;View.Source;Function.Source")
+def sync_session = modelService.compareModel(sourceModel, targetModel)
 
 logger.info("Generating report")
-
 println dbm.getService(SyncService.class).generateSyncSessionPreviewHtml(sync_session, true)
 
 logger.info("Comparison completed sucessfully")
