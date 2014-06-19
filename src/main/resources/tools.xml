@@ -39,14 +39,27 @@
 
         <output  script="mass-schema-diff.groovy" type="html" />
     </tool>
-
-    <tool id="schema-history" title="Schema diff (history)" projectTypes="inventory">
-        <description>Displays schema(s) change history</description>
-
+    
+    <tool id="mass-schema-diff-notification" title="Schema diff notification (multi)" projectTypes="inventory">
+        <description>Mass Database Synchronization Notification</description>
         <parameters>
+            <parameter name="p_storage_folder" type="string" required="true"  title="Storage Folder"  width="200" />
             <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+            <parameter name="p_emails" type="string" required="true" title="Notify emails" width="400" />
+            <parameter name="p_config_name" type="string" required="true" title="Config name" width="400" />
         </parameters>
 
-        <output  script="schema-history.groovy" type="html" />
+        <output  script="mass-schema-diff-notification.groovy" type="html" />
+    </tool>
+    
+    <tool id="mass-schema-diff-history" title="Schema diff history (multi)" projectTypes="inventory">
+        <description>Displays schema(s) change history</description>
+        <parameters>
+            <parameter name="p_storage_folder" type="string" required="true"  title="Storage Folder"  width="200" />
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+            <parameter name="p_from_date" type="date" required="false" title="From"/>
+            <parameter name="p_to_date" type="date" required="false" title="To" />
+        </parameters>
+        <output  script="mass-schema-diff-history.groovy" type="html" />
     </tool>
 </tools>
