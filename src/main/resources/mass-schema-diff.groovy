@@ -16,8 +16,10 @@ import com.thoughtworks.xstream.XStream
 
 import java.io.*
 import java.text.SimpleDateFormat
+import java.text.DateFormat
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.Charsets
+import java.util.Locale
 
 import com.branegy.dbmaster.sync.api.SyncService
 
@@ -39,15 +41,15 @@ def saveObjectToFile = { object, file_name ->
     }
 }
 
- 
+
 def loadModel = { server_name, db_name ->
     def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/model.dat"
     File file = new File(file_name)
     file.getParentFile().mkdirs();
     Model model = null;
     logger.debug("Loading model from file ${file_name}")
-    if(file.exists() && !file.isDirectory()) { 
-         model = xstream.fromXML(file);
+    if(file.exists() && !file.isDirectory()) {
+        model = xstream.fromXML(file);
     } else {
         logger.debug("File does not exist ${file_name}")
     }
@@ -62,7 +64,7 @@ def saveModel = { server_name, model ->
 
 def saveDiff = { server_name, db_name, syncSession, date ->
     def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/diff-"+
-        new SimpleDateFormat("yyyyMMdd_HHmmss").format(date)+ ".dat"
+            new SimpleDateFormat("yyyyMMdd_HHmmss").format(date)+ ".dat"
     saveObjectToFile(syncSession, file_name)
 }
 
@@ -80,7 +82,7 @@ modelService = dbm.getService(ModelService.class)
 syncService = dbm.getService(SyncService.class)
 invService = dbm.getService(InventoryService.class)
 
-def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
+def sdf = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.US);
 
 for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query))) {
     if (db.getDatabaseName().equalsIgnoreCase("tempdb")) {
@@ -88,40 +90,43 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
     }
     try{
         Date version = new Date();
-        
+
         RevEngineeringOptions options = new RevEngineeringOptions()
         options.database = db.getDatabaseName()
-                
+
         logger.debug("Time is ${sdf.format(version)} (fetching new model)")
-        
+
         def targetModel = modelService.fetchModel(db.getServerName(), options);
-        
+
         logger.debug("Time is ${sdf.format(new Date())} (loading storedModel)")
         def sourceModel = loadModel(db.getServerName(), db.getDatabaseName());
         if (sourceModel == null){
             logger.debug("Time is ${sdf.format(new Date())} (saving model)")
             saveModel(db.getServerName(), targetModel);
             logger.info("${db.getServerName()}.${db.getDatabaseName()}: new database")
+            println "<div>${db.getServerName()}.${db.getDatabaseName()}: new database found</div>"
         } else {
             SyncSession syncSession = modelService.compareModel(sourceModel, targetModel);
             if (syncSession.getSyncResult().getChangeType() != com.branegy.dbmaster.sync.api.SyncPair.ChangeType.EQUALS){
                 logger.debug("Time is ${sdf.format(new Date())} (saving model)")
                 saveModel(db.getServerName(), targetModel);
-                
+
                 logger.debug("Time is ${sdf.format(new Date())} (generate sync)")
                 String diff = syncService.generateSyncSessionPreviewHtml(syncSession, true);
                 saveDiff(db.getServerName(), db.getDatabaseName(), diff, version);
                 logger.info("${db.getServerName()}.${db.getDatabaseName()}: data structure changes found")
+                println "<div>${db.getServerName()}.${db.getDatabaseName()}: data structure changes found</div>"
             } else {
                 def file_name = p_storage_folder + "/" + db.getServerName() + "/" + db.getDatabaseName() + "/model.dat"
                 new File(file_name).setLastModified(version.getTime())
+                println "<div>${db.getServerName()}.${db.getDatabaseName()}: no data structure changes found</div>"
             }
         }
         saveErrorMessage(db.getServerName(), db.getDatabaseName(), null);
     } catch (Exception e){
         saveErrorMessage(db.getServerName(), db.getDatabaseName(), e.toString());
-    
+
         logger.error("${db.getServerName()}.${db.getDatabaseName()}: Error occurs", e)
         println "<div>${db.getServerName()}.${db.getDatabaseName()} error: ${e.getMessage()}</div>"
-    } 
+    }
 }

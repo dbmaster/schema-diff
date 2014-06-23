@@ -25,6 +25,9 @@ import com.branegy.dbmaster.sync.api.SyncService
 import org.apache.commons.io.Charsets
 import org.apache.commons.io.FilenameUtils
 import com.branegy.scripting.DbMaster
+import java.text.DateFormat
+import java.util.Locale
+
 
 public class MassSchemaDiffHistory{
     final Logger logger;
@@ -40,6 +43,8 @@ public class MassSchemaDiffHistory{
     }
     
     def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
+    def userDf = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.US);
+    
     
     def fileToString = { file ->
         return IOUtils.toString(file.toURI().toURL(), Charsets.UTF_8)
@@ -60,6 +65,7 @@ public class MassSchemaDiffHistory{
     
     public String getHistory(String p_database_query, String p_storage_folder){
         StringBuilder emailContent = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query))) {
             if (db.getDatabaseName().equalsIgnoreCase("tempdb")) {
                 continue;
@@ -78,7 +84,7 @@ public class MassSchemaDiffHistory{
                     }
                 }
                 
-                emailContent.append("<h2>Server "+server_name+", "+db_name+"</h2><br/>");
+                builder.setLength(0);
                         
                 def errorContent = null;
                 def errorVersion = null;
@@ -99,16 +105,22 @@ public class MassSchemaDiffHistory{
                 diffFiles.sort{ a,b -> a.getName().compareTo(b.getName())};
                 for (File f:diffFiles){
                     Date version = extractVersionFromFile(f);
-                    emailContent.append("<div>Date "+ version +"</div>");
-                    emailContent.append("<div>"+ fileToString(f) +"</div>");
+                    builder.append("<div>Date "+ userDf.format(version) +"</div>");
+                    builder.append("<div>"+ fileToString(f) +"</div>");
                 }
                 if (errorContent!=null){
-                    emailContent.append("<div>Date "+ errorVersion +"</div>");
-                    emailContent.append("<div>" + errorContent + "</div>");
+                    builder.append("<div>Date "+ userDf.format(errorVersion) +"</div>");
+                    builder.append("<div>" + errorContent + "</div>");
                 }
-                emailContent.append("<br/>");
+                
+                if (builder.length()!=0){
+                    emailContent.append("<h2>Server "+server_name+", "+db_name+"</h2>");
+                    emailContent.append(builder.toString());
+                    emailContent.append("<br/>");
+                }
             } catch (Exception e){
                 logger.error("${db.getServerName()}.${db.getDatabaseName()}: Error occurs", e)
+                emailContent.append("<h2>Server "+server_name+", "+db_name+"</h2>");
                 emailContent.append("<div>Error: ${e.getMessage()}</div>");
             }
         }
