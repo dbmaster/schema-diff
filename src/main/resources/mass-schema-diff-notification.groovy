@@ -19,6 +19,7 @@ def stringToFile = { file, content ->
 Date versionA = null;
 Date versionB = null;
 Date version = new Date();
+def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff";
 
 def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
 def configFile = new File(p_storage_folder + "/" + p_config_name);

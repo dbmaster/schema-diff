@@ -24,6 +24,7 @@ import java.util.Locale
 import com.branegy.dbmaster.sync.api.SyncService
 
 def xstream = new XStream();
+def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff";
 
 def saveObjectToFile = { object, file_name ->
     File file = new File(file_name)
