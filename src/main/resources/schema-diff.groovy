@@ -37,4 +37,4 @@ def sync_session = modelService.compareModel(sourceModel, targetModel)
 logger.info("Generating report")
 println dbm.getService(SyncService.class).generateSyncSessionPreviewHtml(sync_session, true)
 
-logger.info("Comparison completed sucessfully")
+logger.info("Comparison completed successfully")
