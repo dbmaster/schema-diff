@@ -76,7 +76,8 @@ public class MassSchemaDiffHistory{
             try{
                 def dir = new File(p_storage_folder + "/" + server_name + "/" + db_name);
                 if (!dir.exists() || !dir.isDirectory() || !new File(dir,"model.dat").exists()){
-                    logger.warn("Server {}, database {} is not exists", db.getServerName(), db.getDatabaseName());
+                    logger.warn("Server {}, database {} exists in inventory but is not accessible at the server", 
+                                 db.getServerName(), db.getDatabaseName());
                     def errorFile = new File(dir,"lastError.txt");
                     if (!errorFile.exists() || !errorFile.isFile()){
                         emailContent.append("<h2>Server "+server_name+", "+db_name+" model is not found!</h2><br/>");

@@ -24,7 +24,10 @@ import java.util.Locale
 import com.branegy.dbmaster.sync.api.SyncService
 
 def xstream = new XStream();
+// TODO - use property
 def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff";
+logger.debug("Using storage folder ${p_storage_folder}")
+
 
 def saveObjectToFile = { object, file_name ->
     File file = new File(file_name)
@@ -89,7 +92,7 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
     if (db.getDatabaseName().equalsIgnoreCase("tempdb")) {
         continue;
     }
-    try{
+    try {
         Date version = new Date();
 
         RevEngineeringOptions options = new RevEngineeringOptions()
@@ -101,7 +104,7 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
 
         logger.debug("Time is ${sdf.format(new Date())} (loading storedModel)")
         def sourceModel = loadModel(db.getServerName(), db.getDatabaseName());
-        if (sourceModel == null){
+        if (sourceModel == null) {
             logger.debug("Time is ${sdf.format(new Date())} (saving model)")
             saveModel(db.getServerName(), targetModel);
             logger.info("${db.getServerName()}.${db.getDatabaseName()}: new database")
@@ -124,8 +127,12 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
             }
         }
         saveErrorMessage(db.getServerName(), db.getDatabaseName(), null);
-    } catch (Exception e){
-        saveErrorMessage(db.getServerName(), db.getDatabaseName(), e.toString());
+    } catch (Exception e) {
+        // TODO below is a quick and dirty solution to work around skipping connectivity issues
+        //      there can be other errors that shoud not be skipped
+        if (p_ignore_nonOnlineDBs) {
+            saveErrorMessage(db.getServerName(), db.getDatabaseName(), e.toString())
+        }
 
         logger.error("${db.getServerName()}.${db.getDatabaseName()}: Error occurs", e)
         println "<div>${db.getServerName()}.${db.getDatabaseName()} error: ${e.getMessage()}</div>"

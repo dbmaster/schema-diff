@@ -7,6 +7,8 @@ import org.apache.commons.io.*
 import javax.mail.Message.RecipientType;
 import java.text.DateFormat
 import java.util.Locale
+import com.branegy.service.base.api.ProjectService
+
 
 def fileToString = { file ->
     return IOUtils.toString(file.toURI().toURL(), Charsets.UTF_8)
@@ -34,14 +36,27 @@ String emailBody = new MassSchemaDiffHistory(logger, versionA, versionB, dbm)
 stringToFile(configFile, sdf.format(version));
 EmailSender email = dbm.getService(EmailSender.class);
 
-def emailDf = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.US);
+def emailDf = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
 String[] to = p_emails.split("[,;]");
 
-if (!emailBody.isEmpty()){
-    email.createMessage(to[0], "Mass schema diff result for ${emailDf.format(version)}", "Please find database changes attached", true)
+
+
+def projectName = dbm.getService(ProjectService.class).getCurrentProject().getName();
+def subject     = "Project ${projectName}: schema change report";
+
+if (!emailBody.isEmpty()) {
+    email.createMessage(
+        to[0], 
+        subject, 
+        "${emailDf.format(version)}. Please find database changes attached.", 
+        true)
     email.addAttachment("changes.html", emailBody)
-} else {
-    email.createMessage(to[0], "Mass schema diff result for ${emailDf.format(version)}", "No changes was found", false)
+} else if (p_notify_nochanges) {
+    email.createMessage(
+        to[0], 
+        subject, 
+        "${emailDf.format(version)}. No changes was found", 
+        false)
 }
 
 for (int i=1; i<to.length; ++i){
