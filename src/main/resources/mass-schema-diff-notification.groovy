@@ -4,7 +4,7 @@ import com.branegy.dbmaster.model.*
 import com.branegy.dbmaster.sync.api.*
 import com.branegy.email.EmailSender
 import org.apache.commons.io.*
-import javax.mail.Message.RecipientType;
+import javax.mail.Message.RecipientType
 import java.text.DateFormat
 import java.util.Locale
 import com.branegy.service.base.api.ProjectService
@@ -43,6 +43,7 @@ String[] to = p_emails.split("[,;]");
 
 def projectName = dbm.getService(ProjectService.class).getCurrentProject().getName();
 def subject     = "Project ${projectName}: schema change report";
+def sendEmail   = false
 
 if (!emailBody.isEmpty()) {
     email.createMessage(
@@ -51,15 +52,19 @@ if (!emailBody.isEmpty()) {
         "${emailDf.format(version)}. Please find database changes attached.", 
         true)
     email.addAttachment("changes.html", emailBody)
+    sendEmail = true
 } else if (p_notify_nochanges) {
     email.createMessage(
         to[0], 
         subject, 
         "${emailDf.format(version)}. No changes was found", 
         false)
+   sendEmail = true
 }
 
-for (int i=1; i<to.length; ++i){
-    email.addRecepient(RecipientType.TO, to[i]);
+if (sendEmail) {
+    for (int i=1; i<to.length; ++i) {
+        email.addRecepient(RecipientType.TO, to[i])
+    }
+    email.sendMessage()
 }
-email.sendMessage();
