@@ -19,8 +19,9 @@ import java.text.SimpleDateFormat
 import java.text.DateFormat
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.Charsets
+import org.apache.commons.io.FilenameUtils
 import java.util.Locale
-
+import org.apache.commons.io.FileUtils;
 import com.branegy.dbmaster.sync.api.SyncService
 
 def xstream = new XStream();
@@ -73,12 +74,10 @@ def saveDiff = { server_name, db_name, syncSession, date ->
 }
 
 def saveErrorMessage = { server_name, db_name,  message ->
-    def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/lastError.txt";
-    if (message != null){
-        saveObjectToFile(message, file_name)
-    } else {
-        new File(file_name).delete();
-    }
+    def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/errors.txt";
+    FileUtils.writeStringToFile(new File(file_name),
+        new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())+" "+message.replaceAll("\r\n|\n"," "),
+        Charsets.UTF_8,true);
 }
 
 
@@ -126,7 +125,6 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
                 println "<div>${db.getServerName()}.${db.getDatabaseName()}: no data structure changes found</div>"
             }
         }
-        saveErrorMessage(db.getServerName(), db.getDatabaseName(), null);
     } catch (Exception e) {
         // TODO below is a quick and dirty solution to work around skipping connectivity issues
         //      there can be other errors that shoud not be skipped

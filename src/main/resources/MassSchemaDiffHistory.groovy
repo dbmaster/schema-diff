@@ -11,8 +11,9 @@ import com.branegy.service.core.QueryRequest
 import com.branegy.dbmaster.sync.api.SyncPair.ChangeType
 import com.branegy.email.EmailSender
 import com.branegy.service.core.search.CustomCriterion
+import java.text.ParseException;
+import org.apache.commons.io.Charsets;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import org.slf4j.Logger;
@@ -63,6 +64,40 @@ public class MassSchemaDiffHistory{
         }
     }
     
+    def loadErrors(file, versionA, versionB){
+        InputStream    fis;
+        BufferedReader br;
+        String         line;
+        List<String> result = [];
+        try{
+            if (!file.exists() || !file.isFile()){
+                return result;
+            }
+            fis = new FileInputStream(file);
+            br = new BufferedReader(new InputStreamReader(fis, Charsets.UTF_8));
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split(" ",2);
+                try{
+                    Date version = sdf.parse(split[0]);
+                    if (version.compareTo(versionA)>=0 && 
+                        (versionB == null || version.compareTo(versionB)<=0)){
+                        result.add(userDf.format(version)+"</div><div>"+split[1]);
+                    } else if (versionB !=null && version.compareTo(versionB)>0){
+                        break;  
+                    }
+                } catch (ParseException e){
+                    logger.error("Illegal log date format {}", split[0]);
+                }
+            }
+            // select top ?
+        } finally {
+            IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(fis);
+        }
+        return result;
+    }
+    
+    
     public String getHistory(String p_database_query, String p_storage_folder){
         StringBuilder emailContent = new StringBuilder();
         StringBuilder builder = new StringBuilder();
@@ -78,7 +113,7 @@ public class MassSchemaDiffHistory{
                 if (!dir.exists() || !dir.isDirectory() || !new File(dir,"model.dat").exists()){
                     logger.warn("Server {}, database {} exists in inventory but is not accessible at the server", 
                                  db.getServerName(), db.getDatabaseName());
-                    def errorFile = new File(dir,"lastError.txt");
+                    def errorFile = new File(dir,"errors.txt");
                     if (!errorFile.exists() || !errorFile.isFile()){
                         emailContent.append("<h2>Server "+server_name+", "+db_name+" model is not found!</h2><br/>");
                         continue;
@@ -87,14 +122,7 @@ public class MassSchemaDiffHistory{
                 
                 builder.setLength(0);
                         
-                def errorContent = null;
-                def errorVersion = null;
-                def errorFile = new File(dir,"lastError.txt");
-                if (errorFile.exists() && errorFile.isFile()
-                    && (errorVersion = new Date(errorFile.lastModified())).compareTo(versionA)>=0
-                    && (versionB == null || errorVersion.compareTo(versionB) <= 0)){
-                    errorContent = fileToString(errorFile);
-                }
+                def errorContent = loadErrors(new File(dir,"errors.txt"), versionA, versionB);
                 
                 def diffFiles = dir.listFiles(new FileFilter(){
                     public boolean accept(File pathname){
@@ -109,9 +137,10 @@ public class MassSchemaDiffHistory{
                     builder.append("<div>Date "+ userDf.format(version) +"</div>");
                     builder.append("<div>"+ fileToString(f) +"</div>");
                 }
-                if (errorContent!=null){
-                    builder.append("<div>Date "+ userDf.format(errorVersion) +"</div>");
-                    builder.append("<div>" + errorContent + "</div>");
+                if (!errorContent.isEmpty()){
+                    for (String e:errorContent){
+                        builder.append("<div>Date " + e + "</div>");
+                    }
                 }
                 
                 if (builder.length()!=0){
