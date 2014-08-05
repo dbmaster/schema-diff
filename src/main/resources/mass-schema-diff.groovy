@@ -28,7 +28,7 @@ def xstream = new XStream();
 // TODO - use property
 def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff";
 logger.debug("Using storage folder ${p_storage_folder}")
-
+def SDF = new SimpleDateFormat("yyyyMMdd_HHmmss")
 
 def saveObjectToFile = { object, file_name ->
     File file = new File(file_name)
@@ -68,16 +68,14 @@ def saveModel = { server_name, model ->
 }
 
 def saveDiff = { server_name, db_name, syncSession, date ->
-    def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/diff-"+
-            new SimpleDateFormat("yyyyMMdd_HHmmss").format(date)+ ".dat"
+    def file_name = "${p_storage_folder}/${server_name}/${db_name}/diff-${SDF.format(date)}.dat"
     saveObjectToFile(syncSession, file_name)
 }
 
-def saveErrorMessage = { server_name, db_name,  message ->
-    def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/errors.txt";
-    FileUtils.writeStringToFile(new File(file_name),
-        new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())+" "+message.replaceAll("\r\n|\n"," "),
-        Charsets.UTF_8,true);
+def saveMessage = { server_name, db_name,  message ->
+    def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/messages.txt";
+	def msg = SDF.format(new Date())+" "+message.replaceAll("\r\n|\n"," ");
+    FileUtils.writeStringToFile(new File(file_name), msg ,Charsets.UTF_8, true);
 }
 
 
@@ -97,17 +95,18 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
         RevEngineeringOptions options = new RevEngineeringOptions()
         options.database = db.getDatabaseName()
 
-        logger.debug("Time is ${sdf.format(version)} (fetching new model)")
+        logger.debug("Loading schema ${db.getDatabaseName()} from database server")
 
         def targetModel = modelService.fetchModel(db.getServerName(), options);
 
-        logger.debug("Time is ${sdf.format(new Date())} (loading storedModel)")
+        logger.debug("Loading schema snapshot")
         def sourceModel = loadModel(db.getServerName(), db.getDatabaseName());
         if (sourceModel == null) {
-            logger.debug("Time is ${sdf.format(new Date())} (saving model)")
+            logger.debug("Saving new schema snapshot")
             saveModel(db.getServerName(), targetModel);
-            logger.info("${db.getServerName()}.${db.getDatabaseName()}: new database")
-            println "<div>${db.getServerName()}.${db.getDatabaseName()}: new database found</div>"
+            logger.info("New schema snapshot for database ${db.getServerName()}.${db.getDatabaseName()} saved")
+            println "<div>${db.getServerName()}.${db.getDatabaseName()}: new schema snapshot saved</div>"
+			saveMessage(db.getServerName(), db.getDatabaseName(), "New schema snapshot saved")
         } else {
             SyncSession syncSession = modelService.compareModel(sourceModel, targetModel);
             if (syncSession.getSyncResult().getChangeType() != com.branegy.dbmaster.sync.api.SyncPair.ChangeType.EQUALS){
@@ -129,7 +128,7 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
         // TODO below is a quick and dirty solution to work around skipping connectivity issues
         //      there can be other errors that shoud not be skipped
         if (p_ignore_nonOnlineDBs) {
-            saveErrorMessage(db.getServerName(), db.getDatabaseName(), e.toString())
+            saveMessage(db.getServerName(), db.getDatabaseName(), e.toString())
         }
 
         logger.error("${db.getServerName()}.${db.getDatabaseName()}: Error occurs", e)
