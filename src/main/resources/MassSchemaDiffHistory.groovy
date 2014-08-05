@@ -30,28 +30,27 @@ import java.text.DateFormat
 import java.util.Locale
 
 
-public class MassSchemaDiffHistory{
+public class MassSchemaDiffHistory {
     final Logger logger;
     final Date versionA;
     final Date versionB;
     final InventoryService invService = dbm.getService(InventoryService.class)
+    def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
+    def userDf = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.US)
     
-    public MassSchemaDiffHistory(Logger logger, Date versionFrom, Date versionTo, DbMaster dbm){
+    public MassSchemaDiffHistory(Logger logger, Date versionFrom, Date versionTo, DbMaster dbm) {
         this.logger = logger;
         this.versionA = versionFrom == null ? new Date(0) : versionFrom;
         this.versionB = versionTo;
         this.invService = dbm.getService(InventoryService.class);
+		logger.info("Loading history between ${versionFrom} and ${versionTo}")
     }
-    
-    def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
-    def userDf = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT, Locale.US);
-    
     
     def fileToString = { file ->
         return IOUtils.toString(file.toURI().toURL(), Charsets.UTF_8)
     }
     
-    def extractVersionFromFile(file){
+    def extractVersionFromFile(file) {
         if (!file.getName().startsWith("diff-")){
             return null;
         }
@@ -64,13 +63,13 @@ public class MassSchemaDiffHistory{
         }
     }
     
-    def loadErrors(file, versionA, versionB){
+    def loadErrors(file, versionA, versionB) {
         InputStream    fis;
         BufferedReader br;
         String         line;
         List<String> result = [];
         try{
-            if (!file.exists() || !file.isFile()){
+            if (!file.exists() || !file.isFile()) {
                 return result;
             }
             fis = new FileInputStream(file);
@@ -80,12 +79,12 @@ public class MassSchemaDiffHistory{
                 try{
                     Date version = sdf.parse(split[0]);
                     if (version.compareTo(versionA)>=0 && 
-                        (versionB == null || version.compareTo(versionB)<=0)){
-                        result.add(userDf.format(version)+"</div><div>"+split[1]);
-                    } else if (versionB !=null && version.compareTo(versionB)>0){
+                        (versionB == null || version.compareTo(versionB)<=0)) {
+                        result.add(userDf.format(version)+":"+split[1]);
+                    } else if (versionB !=null && version.compareTo(versionB)>0) {
                         break;  
                     }
-                } catch (ParseException e){
+                } catch (ParseException e) {
                     logger.error("Illegal log date format {}", split[0]);
                 }
             }
@@ -98,7 +97,7 @@ public class MassSchemaDiffHistory{
     }
     
     
-    public String getHistory(String p_database_query, String p_storage_folder){
+    public String getHistory(String p_database_query, String p_storage_folder) {
         StringBuilder emailContent = new StringBuilder();
         StringBuilder builder = new StringBuilder();
         for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query))) {
@@ -113,7 +112,7 @@ public class MassSchemaDiffHistory{
                 if (!dir.exists() || !dir.isDirectory() || !new File(dir,"model.dat").exists()){
                     logger.warn("Server {}, database {} exists in inventory but is not accessible at the server", 
                                  db.getServerName(), db.getDatabaseName());
-                    def errorFile = new File(dir,"errors.txt");
+                    def errorFile = new File(dir, "messages.txt");
                     if (!errorFile.exists() || !errorFile.isFile()){
                         emailContent.append("<h2>Server "+server_name+", "+db_name+" model is not found!</h2><br/>");
                         continue;
@@ -122,7 +121,7 @@ public class MassSchemaDiffHistory{
                 
                 builder.setLength(0);
                         
-                def errorContent = loadErrors(new File(dir,"errors.txt"), versionA, versionB);
+                def errorContent = loadErrors(new File(dir,"messages.txt"), versionA, versionB);
                 
                 def diffFiles = dir.listFiles(new FileFilter(){
                     public boolean accept(File pathname){
@@ -134,12 +133,12 @@ public class MassSchemaDiffHistory{
                 diffFiles.sort{ a,b -> a.getName().compareTo(b.getName())};
                 for (File f:diffFiles){
                     Date version = extractVersionFromFile(f);
-                    builder.append("<div>Date "+ userDf.format(version) +"</div>");
+                    builder.append("<div> "+ userDf.format(version) +"</div>!!");
                     builder.append("<div>"+ fileToString(f) +"</div>");
                 }
-                if (!errorContent.isEmpty()){
-                    for (String e:errorContent){
-                        builder.append("<div>Date " + e + "</div>");
+                if (!errorContent.isEmpty()) {
+                    for (String msg:errorContent) {
+                        builder.append("<div>${msg}</div>");
                     }
                 }
                 
@@ -150,7 +149,7 @@ public class MassSchemaDiffHistory{
                 }
             } catch (Exception e){
                 logger.error("${db.getServerName()}.${db.getDatabaseName()}: Error occurs", e)
-                emailContent.append("<h2>Server "+server_name+", "+db_name+"</h2>");
+                emailContent.append("<h2>Server ${server_name}, ${db_name}</h2>");
                 emailContent.append("<div>Error: ${e.getMessage()}</div>");
             }
         }
