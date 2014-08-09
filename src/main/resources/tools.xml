@@ -29,6 +29,18 @@
         </parameters>
         <output  script="schema-diff.groovy" type="html" />
     </tool>
+
+    <tool id="model-diff" title="Model diff" projectTypes="modeling">
+        <description>Compares structures of two models</description>
+
+        <parameters>                                                  	
+            <parameter name="p_source_model" title="Source Model" type="integer" required="true"  suggestion="project_models"  width="400" />
+            <parameter name="p_target_model" title="Target Model" type="integer" required="true"  suggestion="project_models"  width="400" />
+        </parameters>
+
+        <output  script="model-diff.groovy" type="html" />
+    </tool>
+
     
     <tool id="mass-schema-diff" title="Schema diff (multi)" projectTypes="inventory">
 
