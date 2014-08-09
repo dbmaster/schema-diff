@@ -4,3 +4,4 @@
 target/
 src/main/resources/mass-schema-diff-xxx.groovy
 src/main/resources/todo.txt
+*.bak
