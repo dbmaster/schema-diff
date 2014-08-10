@@ -38,6 +38,9 @@ logger.info("Comparing databases")
 def sync_session = modelService.compareModel(sourceModel, targetModel)
 
 logger.info("Generating report")
-println dbm.getService(SyncService.class).generateSyncSessionPreviewHtml(sync_session, true)
+def service = dbm.getService(SyncService.class)
+def template = "/preview-model-generator.groovy"
+def previewHtml = service.generateSyncSessionPreviewHtml(template, sync_session, true)
+
 
 logger.info("Comparison completed successfully")
