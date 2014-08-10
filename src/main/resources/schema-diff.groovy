@@ -1,7 +1,7 @@
 import com.branegy.dbmaster.database.api.ModelService
 import com.branegy.dbmaster.model.*
 import io.dbmaster.sync.*
-import com.branegy.dbmaster.sync.api.SyncService;
+import com.branegy.dbmaster.sync.api.SyncService
 
 modelService = dbm.getService(ModelService.class)
 
@@ -26,13 +26,12 @@ target_options.database = target_database
 target_options.importViews = true
 target_options.importProcedures = true
 
-
-new ModelConverter(logger).convertModel(sourceModel, 
-                                        targetModel.getCustomData("dialect"), 
-                                        targetModel.getCustomData("dialect_version"))
-
 logger.info("Loading target database")
 targetModel = modelService.fetchModel(target_server, target_options)
+
+sourceModel  = new ModelConverter(logger).
+  convertModel(sourceModel, targetModel.getCustomData("source_dialect"), 
+                            targetModel.getCustomData("source_dialect_version"))
 
 logger.info("Comparing databases")
 def sync_session = modelService.compareModel(sourceModel, targetModel)
@@ -42,5 +41,6 @@ def service = dbm.getService(SyncService.class)
 def template = "/preview-model-generator.groovy"
 def previewHtml = service.generateSyncSessionPreviewHtml(template, sync_session, true)
 
+println previewHtml
 
 logger.info("Comparison completed successfully")

@@ -16,7 +16,7 @@ targetModel = modelService.findModelById(p_target_model)
 
 logger.info("Converting source model")
 
-new ModelConverter(logger).convertModel(sourceModel, 
+sourceModel = new ModelConverter(logger).convertModel(sourceModel, 
                                         targetModel.getCustomData("dialect"), 
                                         targetModel.getCustomData("dialect_version"))
 
@@ -27,6 +27,8 @@ logger.info("Generating report")
 def service = dbm.getService(SyncService.class)
 def template = "/preview-model-generator.groovy"
 def previewHtml = service.generateSyncSessionPreviewHtml(template, sync_session, true)
+
+println previewHtml
 
 logger.debug("Generation completed")
 

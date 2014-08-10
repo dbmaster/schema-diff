@@ -10,10 +10,10 @@ public class ModelConverter {
     }
 
     public Model convertModel(Model model, String toDialect, String toDialectVersion) {
-        String dialect = targetModel.getCustomData("dialect")
+        String dialect = model.getCustomData("source_dialect")
         logger.info("Converting ${dialect} to ${toDialect} v${toDialectVersion}")
         if (dialect==null || !dialect.equals("MySQL") || toDialect==null || !toDialect.equals("sqlserver")) {
-            return
+            return model
         }
 
         model.tables.each { table ->
@@ -114,6 +114,7 @@ public class ModelConverter {
                 }
             }
         }
+        return model
     }
 
 }
