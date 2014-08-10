@@ -30,7 +30,7 @@
                         <Tags>inventory,sqlserver</Tags>
                         <Author>slava.christin</Author>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Require-Bundle>dbmaster-sync;bundle-version="1.0.6"</Require-Bundle>
+                        <Require-Bundle>dbmaster-sync;bundle-version="1.0.8"</Require-Bundle>
                         <Import-Package>io.dbmaster.api;version="1.8.0"</Import-Package>
                     </instructions>
                 </configuration>
