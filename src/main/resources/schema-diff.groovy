@@ -17,16 +17,19 @@ source_options.database = source_database
 source_options.importViews = true
 source_options.importProcedures = true
 
-
 logger.info("Loading source database")
 
 sourceModel = modelService.fetchModel(source_server, source_options)
 
 RevEngineeringOptions target_options = new RevEngineeringOptions()
+target_options.database = target_database
 target_options.importViews = true
 target_options.importProcedures = true
 
-target_options.database = target_database
+
+new ModelConverter(logger).convertModel(sourceModel, 
+                                        targetModel.getCustomData("dialect"), 
+                                        targetModel.getCustomData("dialect_version"))
 
 logger.info("Loading target database")
 targetModel = modelService.fetchModel(target_server, target_options)
