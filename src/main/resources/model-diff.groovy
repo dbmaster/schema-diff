@@ -9,10 +9,10 @@ def convertModel(Model model) {
     model.tables.each { table ->
         table.setName("dbo."+table.name)
         table.columns.each { column ->
-            String identity = column.getCustomData("Extra")
-            column.setCustomData("is_identity",(identity!=null && identity.equals("auto_increment")) ? 1 : null)
+                String identity = column.getCustomData("Extra")
+                column.setCustomData("is_identity",(identity!=null && identity.equals("auto_increment")) ? 1 : null)
 
-            switch (column.type.toLowerCase()) {
+                switch (column.type.toLowerCase()) {
                 // INTEGER TYPES
                 case "bit": 
                 // TODO Review bit type 
@@ -110,11 +110,11 @@ modelService = dbm.getService(ModelService.class)
 
 logger.info("Loading source model")
 
-sourceModel = modelService.findModelById(p_source_model)
-
+sourceModel = modelService.findModelById(p_source_model,Model.FETCH_TREE)
+com.branegy.util.InjectorUtil.getInstance(javax.persistence.EntityManager.class).detach(sourceModel)
 
 logger.info("Converting source model")
-// convertModel(sourceModel)
+convertModel(sourceModel)
 
 logger.info("Loading target model")
 targetModel = modelService.findModelById(p_target_model)
@@ -130,6 +130,3 @@ logger.debug("Generation completed")
 println previewHtml
 
 logger.info("Comparison completed successfully")
-
-//com.branegy.util.InjectorUtil.getInstance(javax.persistence.EntityManager.class).detach(sourceModel)
-//dbm.setRollbackOnly()
