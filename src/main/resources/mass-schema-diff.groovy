@@ -95,6 +95,10 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
         RevEngineeringOptions options = new RevEngineeringOptions()
         options.database = db.getDatabaseName()
 
+        // TODO move to parameters
+        options.importViews = true
+        options.importProcedures = true
+        
         logger.debug("Loading schema ${db.getDatabaseName()} from database server")
 
         def targetModel = modelService.fetchModel(db.getServerName(), options);
@@ -114,7 +118,9 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
                 saveModel(db.getServerName(), targetModel);
 
                 logger.debug("Time is ${sdf.format(new Date())} (generate sync)")
-                String diff = syncService.generateSyncSessionPreviewHtml(syncSession, true);
+
+                def template = "/preview-model-generator.groovy"
+                String diff = syncService.generateSyncSessionPreviewHtml(template ,syncSession, true);
                 saveDiff(db.getServerName(), db.getDatabaseName(), diff, version);
                 logger.info("${db.getServerName()}.${db.getDatabaseName()}: data structure changes found")
                 println "<div>${db.getServerName()}.${db.getDatabaseName()}: data structure changes found</div>"
@@ -126,7 +132,7 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
         }
     } catch (Exception e) {
         // TODO below is a quick and dirty solution to work around skipping connectivity issues
-        //      there can be other errors that shoud not be skipped
+        //      there can be other errors that should not be skipped
         if (p_ignore_nonOnlineDBs) {
             saveMessage(db.getServerName(), db.getDatabaseName(), e.toString())
         }
