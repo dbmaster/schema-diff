@@ -30,8 +30,8 @@ logger.info("Loading target database")
 targetModel = modelService.fetchModel(target_server, target_options)
 
 sourceModel  = new ModelConverter(logger).
-  convertModel(sourceModel, targetModel.getCustomData("source_dialect"), 
-                            targetModel.getCustomData("source_dialect_version"))
+  convertModel(sourceModel, targetModel.getCustomData("dialect"), 
+                            targetModel.getCustomData("dialect_version"))
 
 logger.info("Comparing databases")
 def sync_session = modelService.compareModel(sourceModel, targetModel)
