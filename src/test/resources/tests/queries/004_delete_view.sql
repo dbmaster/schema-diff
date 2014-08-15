@@ -1,1 +1,0 @@
-drop view dbo.vw_customers

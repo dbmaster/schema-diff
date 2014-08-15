@@ -1,1 +1,0 @@
-alter table dbo.customers alter column debt_amt decimal(6, 2) not null
