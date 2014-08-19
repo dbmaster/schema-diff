@@ -74,7 +74,7 @@ def saveDiff = { server_name, db_name, syncSession, date ->
 
 def saveMessage = { server_name, db_name,  message ->
     def file_name = p_storage_folder + "/" + server_name + "/" + db_name + "/messages.txt";
-	def msg = SDF.format(new Date())+" "+message.replaceAll("\r\n|\n"," ");
+    def msg = SDF.format(new Date())+" "+message.replaceAll("\r\n|\n"," ")+System.getProperty("line.separator");
     FileUtils.writeStringToFile(new File(file_name), msg ,Charsets.UTF_8, true);
 }
 
@@ -110,7 +110,7 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
             saveModel(db.getServerName(), targetModel);
             logger.info("New schema snapshot for database ${db.getServerName()}.${db.getDatabaseName()} saved")
             println "<div>${db.getServerName()}.${db.getDatabaseName()}: new schema snapshot saved</div>"
-			saveMessage(db.getServerName(), db.getDatabaseName(), "New schema snapshot saved")
+            saveMessage(db.getServerName(), db.getDatabaseName(), "New schema snapshot saved")
         } else {
             SyncSession syncSession = modelService.compareModel(sourceModel, targetModel);
             if (syncSession.getSyncResult().getChangeType() != com.branegy.dbmaster.sync.api.SyncPair.ChangeType.EQUALS){
