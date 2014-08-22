@@ -8,6 +8,9 @@ import javax.mail.Message.RecipientType
 import java.text.DateFormat
 import java.util.Locale
 import com.branegy.service.base.api.ProjectService
+import org.apache.commons.io.IOUtils
+import com.branegy.tools.impl.presenter.DirectHmltDataPresenter
+import org.apache.commons.io.Charsets
 
 
 def fileToString = { file ->
@@ -51,6 +54,12 @@ if (!emailBody.isEmpty()) {
         subject, 
         "${emailDf.format(version)}. Please find database changes attached.", 
         true)
+    
+    emailBody = "<!DOCTYPE html><html><head><style type=\"text/css\">"+
+    // TODO do refactoring
+    IOUtils.toString(DirectHmltDataPresenter.class.getResource("extra.css"), Charsets.UTF_8)+
+    "</style></head><body><div>" + emailBody + "</div></body></html>";
+    
     email.addAttachment("changes.html", emailBody)
     sendEmail = true
 } else if (p_notify_nochanges) {
