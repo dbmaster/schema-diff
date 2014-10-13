@@ -39,7 +39,8 @@ def sync_session = modelService.compareModel(sourceModel, targetModel)
 logger.info("Generating report")
 def service = dbm.getService(SyncService.class)
 def template = "/preview-model-generator.groovy"
-def previewHtml = service.generateSyncSessionPreviewHtml(template, sync_session, true)
+
+def previewHtml = service.generateSyncSessionPreviewHtml(template, sync_session, p_show_changes_only)
 
 println previewHtml
 

@@ -10,6 +10,9 @@
                        type="string" required="true"  
                        suggestion="project_databases" width="400"  />
 
+            <parameter name="p_show_changes_only" title="Show Changes Only" 
+                       type="boolean" required="true"  defaultValue="false" />
+
           <!--
             <parameter name="p_exclude_objects" title="Exclude Objects" type="string" required="false"
                        multiple="true">
