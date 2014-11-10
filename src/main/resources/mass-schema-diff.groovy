@@ -4,13 +4,10 @@ import com.branegy.dbmaster.model.*
 import com.branegy.dbmaster.sync.api.*
 import com.branegy.inventory.model.Database
 import com.branegy.service.core.exception.EntityNotFoundApiException
-import com.branegy.service.core.search.CustomCriterion
-import com.branegy.service.core.search.CustomCriterion.Operator
 import com.branegy.dbmaster.model.RevEngineeringOptions
 import com.branegy.service.core.QueryRequest
 import com.branegy.dbmaster.sync.api.SyncPair.ChangeType
 import com.branegy.email.EmailSender
-import com.branegy.service.core.search.CustomCriterion
 
 import com.thoughtworks.xstream.XStream
 
