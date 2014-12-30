@@ -9,7 +9,7 @@
     <name>Schema Diff</name>
     <description>Compares structure of two databases</description>
 
-    <version>1.0.29</version>
+    <version>1.0.32</version>
     <packaging>bundle</packaging>
 
     <parent>

@@ -33,6 +33,45 @@
         <output  script="schema-diff.groovy" type="html" />
     </tool>
 
+
+    <tool id="object-diff" title="Object diff" projectTypes="inventory">
+
+        <description>Compares structures of two database objects</description>
+        <parameters>
+            <parameter name="p_source_database" title="Source Database" type="string" 
+                       required="true"  suggestion="project_databases" width="400"  />
+
+            <parameter name="p_target_database" title="Target Database" 
+                       type="string" required="true"  
+                       suggestion="project_databases" width="400"  />
+
+            <parameter name="p_source_object" title="Source Object" type="string" 
+                       required="true"  width="200"  />
+
+            <parameter name="p_target_object" title="Target Object" type="string" 
+                       required="true"  width="200"  />
+
+          <!--
+            <parameter name="p_exclude_objects" title="Exclude Objects" type="string" required="false"
+                       multiple="true">
+                <values>
+                    <string>Tables</string>
+                    <string>Views</string>
+                    <string>Procedures</string>
+                    <string>Columns</string>
+                    <string>Parameters</string>
+                    <string>Indexes</string>
+                    <string>Constraints</string>
+                    <string>Foreign Keys</string>
+                </values>
+            </parameter>
+
+              -->
+        </parameters>
+        <output  script="object-diff.groovy" type="html" />
+    </tool>
+
+
     <tool id="model-diff" title="Model diff" projectTypes="modeling">
         <description>Compares structures of two models</description>
 
