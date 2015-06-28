@@ -38,6 +38,14 @@ logger.info("Comparing objects")
 def sourceObject = sourceModel.getTable(p_source_object)
 def targetObject = targetModel.getTable(p_target_object)
 
+if (sourceObject==null) {
+   logger.error("Cannot find source object ${p_source_object} in the model")
+}
+
+if (targetObject==null) {
+   logger.error("Cannot find target object ${p_target_object} in the model")
+}
+
 
 def sync_session = modelService.compareObjects(sourceObject, targetObject)
 
