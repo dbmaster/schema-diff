@@ -1,0 +1,1 @@
+alter table dbo.customers drop column name

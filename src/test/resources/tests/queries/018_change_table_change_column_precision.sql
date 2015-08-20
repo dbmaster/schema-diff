@@ -1,0 +1,1 @@
+ALTER TABLE dbo.customers ALTER COLUMN debt_amt decimal(6, 4) NULL

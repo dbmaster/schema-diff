@@ -1,0 +1,1 @@
+alter table dbo.customers add location varchar(100) NULL
