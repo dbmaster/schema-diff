@@ -1,5 +1,3 @@
-import org.apache.commons.io.Charsets;
-
 import com.branegy.tools.api.HtmlPrinter;
 import com.branegy.tools.impl.presenter.DirectHmltDataPresenter;
 
@@ -86,7 +84,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             writer.print("<!DOCTYPE html>");
             writer.print("<html><head>");
             writer.print("<style>");
-            writer.print(IOUtils.toString(DirectHmltDataPresenter.class.getResource("extra.css"), Charsets.UTF_8));
+            writer.print(IOUtils.toString(DirectHmltDataPresenter.class.getResource("extra.css"), "UTF-8"));
             writer.print("</style>");
             writer.print("</head><body>");
             writer.print("<div>");
@@ -154,7 +152,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             writer.print("<!DOCTYPE html>");
             writer.print("<html><head>");
             writer.print("<style>");
-            writer.print(IOUtils.toString(DirectHmltDataPresenter.class.getResource("extra.css"), Charsets.UTF_8));
+            writer.print(IOUtils.toString(DirectHmltDataPresenter.class.getResource("extra.css"), "UTF-8"));
             writer.print("</style>");
             writer.print("</head><body>");
             writer.print("<div>");
