@@ -201,7 +201,9 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
                 tempModel.setVersion("tmp_model");
                 tempModel = modelService.createModel(tempModel, null)
                 EntityManager em = com.branegy.util.InjectorUtil.getInstance(EntityManager.class);
-                em.getTransaction().commit();
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().commit();
+                }
                 em.getTransaction().begin();
                 
                 syncSession = modelService.compareModel(tempModel, changedModel)
