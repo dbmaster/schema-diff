@@ -95,7 +95,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             new File("${testFolder}/tests/queries")
             .listFiles(new FilenameFilter() {
                  public boolean accept(File d, String name) {
-                     return name.endsWith(".groovy");
+                     return name.endsWith(".sql");
                  }
             })
             .sort{ a,b -> a.getName().compareTo(b.getName())}.each { file ->
@@ -176,7 +176,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             new File("${testFolder}/tests/queries")
             .listFiles(new FilenameFilter() {
                  public boolean accept(File d, String name) {
-                     return name.endsWith(".groovy");
+                     return name.endsWith(".sql");
                  }
             })
             .sort{ a,b -> a.getName().compareTo(b.getName())}.each { file ->
