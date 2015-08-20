@@ -1,3 +1,4 @@
+import com.branegy.dbmaster.model.Model;
 import com.branegy.tools.api.HtmlPrinter;
 import com.branegy.tools.impl.presenter.DirectHmltDataPresenter;
 
@@ -10,6 +11,7 @@ import com.branegy.dbmaster.sync.api.*
 import com.branegy.dbmaster.sync.api.SyncPair.ChangeType;
 import com.branegy.service.connection.api.ConnectionService
 import com.branegy.service.connection.model.DatabaseConnection
+import com.branegy.service.core.exception.EntityNotFoundApiException;
 import com.branegy.dbmaster.connection.JDBCDialect
 import com.branegy.dbmaster.connection.Connector
 import com.branegy.dbmaster.connection.ConnectionProvider
@@ -144,6 +146,14 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
         def testFolder =     getTestResourcesDir().getPath();
         def testReportFile = new File(getBuildDir(),"/model-sync-report.html");
         
+        def final MODEL_NAME = "tmp_model";
+        def final MODEL_VERSION = "tmp_model";
+        
+        try {
+            modelService.deleteModel(modelService.findModelByName(MODEL_NAME,MODEL_VERSION,null).getId());
+        } catch (EntityNotFoundApiException e) {
+        }
+        
         OutputStream os = null;
         PrintWriter writer = null;
         try {
@@ -197,8 +207,8 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
                 //----------------------------
                 writer.println("------------------------- Apply test -------------------------------- ")
                 println("Testing apply changes")
-                tempModel.setName("tmp_model");
-                tempModel.setVersion("tmp_model");
+                tempModel.setName(MODEL_NAME);
+                tempModel.setVersion(MODEL_VERSION);
                 tempModel = modelService.createModel(tempModel, null)
                 EntityManager em = com.branegy.util.InjectorUtil.getInstance(EntityManager.class);
                 if (em.getTransaction().isActive()) {
