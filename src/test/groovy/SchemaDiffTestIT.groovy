@@ -92,8 +92,13 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             writer.print("<div>");
                 
             Model originalModel = null
-            def dir = new File("${testFolder}/tests/queries")
-            dir.eachFileRecurse (FileType.FILES) { file ->
+            new File("${testFolder}/tests/queries")
+            .listFiles(new FilenameFilter() {
+                 public boolean accept(File d, String name) {
+                     return name.endsWith(".groovy");
+                 }
+            })
+            .sort{ a,b -> a.getName().compareTo(b.getName())}.each { file ->
                 println ("Processing ${file.name}")
                 writer.println("------------------------- Processing test case for file: ${file.name}")
                 writer.println("<pre>")
@@ -168,8 +173,13 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             writer.print("<div>");
             
             Model originalModel = null;
-            def dir = new File("${testFolder}/tests/queries")
-            dir.eachFileRecurse (FileType.FILES) { file ->
+            new File("${testFolder}/tests/queries")
+            .listFiles(new FilenameFilter() {
+                 public boolean accept(File d, String name) {
+                     return name.endsWith(".groovy");
+                 }
+            })
+            .sort{ a,b -> a.getName().compareTo(b.getName())}.each { file ->
                 println ("Processing ${file.name}")
                 writer.println("------------------------- Processing test case for file: ${file.name}")
                 writer.println("<pre>")
