@@ -91,7 +91,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
             writer.print("<div>");
                 
             Model originalModel = null
-            def dir = new File("${testFolder}\\tests\\queries")
+            def dir = new File("${testFolder}/tests/queries")
             dir.eachFileRecurse (FileType.FILES) { file ->
                 println ("Processing ${file.name}")
                 writer.println("------------------------- Processing test case for file: ${file.name}")
@@ -101,8 +101,8 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
                 writer.println("------------------------- Sync table --------------------------------")
             
                 println ("Cleanup/initiate database with  000_setup.sql")
-                runSQL(connectionName, targetDB, "${testFolder}\\000_cleanup.sql")
-                runSQL(connectionName, targetDB, "${testFolder}\\000_setup.sql")
+                runSQL(connectionName, targetDB, "${testFolder}/000_cleanup.sql")
+                runSQL(connectionName, targetDB, "${testFolder}/000_setup.sql")
             
                 RevEngineeringOptions options = new RevEngineeringOptions();
                 options.database = targetDB
