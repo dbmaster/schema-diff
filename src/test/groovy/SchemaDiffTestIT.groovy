@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 import org.apache.commons.io.Charsets;
 
 import com.branegy.tools.api.HtmlPrinter;
