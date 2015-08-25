@@ -29,6 +29,7 @@ import java.sql.Connection
 import javax.persistence.EntityManager;
 
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.inject.Inject;
@@ -63,20 +64,11 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
         }
     }
     
-    protected final File getTestResourcesDir() {
-        return new File(new File(System.getProperty("artifact.bundle.path")).getParentFile().getParentFile(),"src/test/resources");
-    }
-    
-    protected final File getBuildDir() {
-        return new File(new File(System.getProperty("artifact.bundle.path")).getParentFile().getParentFile(),"target");
-    }
-    
     @Test
-    public void testSchemaDiff() {
-        def targetDB =       getTestProperty("schema-diff.target_db");
-        def connectionName = getTestProperty("schema-diff.connection")
+    @Parameters(["schema-diff.target_db","schema-diff.connection"])
+    public void testSchemaDiff(String targetDB, String connectionName) {
         def testFolder =     getTestResourcesDir().getPath();
-        def testReportFile = new File(getBuildDir(),"/schema-diff-report.html");
+        def testReportFile = new File(getBaseDir(),"target/schema-diff-report.html");
         
         OutputStream os = null;
         PrintWriter writer = null;
@@ -145,11 +137,10 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
     }
     
     @Test
-    public void testModelSync() {
-        def targetDB =       getTestProperty("schema-diff.target_db");
-        def connectionName = getTestProperty("schema-diff.connection");
+    @Parameters(["schema-diff.target_db","schema-diff.connection"])
+    public void testModelSync(String targetDB,String connectionName) {
         def testFolder =     getTestResourcesDir().getPath();
-        def testReportFile = new File(getBuildDir(),"/model-sync-report.html");
+        def testReportFile = new File(getBaseDir(),"target/model-sync-report.html");
         
         def final MODEL_NAME = "tmp_model";
         def final MODEL_VERSION = "tmp_model";
