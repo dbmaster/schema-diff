@@ -8,11 +8,11 @@ modelService = dbm.getService(ModelService.class)
 
 logger.info("Loading source model")
 
-sourceModel = modelService.findModelById(p_source_model,Model.FETCH_TREE)
+sourceModel = modelService.findModelById(Long.parseLong(p_source_model), Model.FETCH_TREE)
 com.branegy.util.InjectorUtil.getInstance(javax.persistence.EntityManager.class).detach(sourceModel)
 
 logger.info("Loading target model")
-targetModel = modelService.findModelById(p_target_model)
+targetModel = modelService.findModelById(Long.parseLong(p_target_model))
 
 logger.info("Converting source model")
 

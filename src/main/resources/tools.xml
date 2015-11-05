@@ -76,8 +76,8 @@
         <description>Compares structures of two models</description>
 
         <parameters>                                                  	
-            <parameter name="p_source_model" title="Source Model" type="integer" required="true"  suggestion="project_models"  width="400" />
-            <parameter name="p_target_model" title="Target Model" type="integer" required="true"  suggestion="project_models"  width="400" />
+            <parameter name="p_source_model" title="Source Model" type="string" required="true"  suggestion="project_models"  width="400" />
+            <parameter name="p_target_model" title="Target Model" type="string" required="true"  suggestion="project_models"  width="400" />
         </parameters>
 
         <output  script="model-diff.groovy" type="html" />
