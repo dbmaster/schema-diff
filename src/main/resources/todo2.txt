@@ -1,36 +1,36 @@
 1. Tool to capture diff
-Parameters:
-a) Storage Folder  (storage_folder)
-b) Database Filter (db_filter)
 
-Tool loads all databases by db_filter from inventory.
-Connects to databases, make a snapshot of structure and stores db diffs and latest model into folder ( <storage_folder>\<server>\<database> ) 
+   Parameters:
+      a) Storage Folder  (storage_folder)
+      b) Database Filter (db_filter)
 
-??? multiple configuration with different schedules and different db filters
+    Tool loads all databases by db_filter from inventory.
+    Connects to databases, make a snapshot of structure and stores db diffs and latest model into folder ( <storage_folder>\<server>\<database> ) 
 
-Store messages: when database is not available or offline
-                new database
+   ??? multiple configuration with different schedules and different db filters
+
+   Store messages: when database is not available or offline  new database
 
 2. Notifications
-
-Parameters:
-a) Storage Folder  (storage_folder)
-b) Database Filter (db_filter)
-c) Users to notify (  emails - multiple separated by line or by semi-colon)
-d) config name (config_name)
+   
+   Parameters:
+      a) Storage Folder  (storage_folder)
+      b) Database Filter (db_filter)
+      c) Users to notify (  emails - multiple separated by line or by semi-colon)
+      d) config name (config_name)
  
-Tool loads all databases by db_filter from inventory.
-Search for diffs and **messages** at folder (<store_folder> \ <server> \ <database>) since ("last notification time")
-If multiple changes / issues fround per database - send them together
-Send emails with all changes
-Store "last notification time" into <store_folder> \ <config_name.txt>
+   Tool loads all databases by db_filter from inventory.
+   Search for diffs and **messages** at folder (<store_folder> \ <server> \ <database>) since ("last notification time")
+   If multiple changes / issues fround per database - send them together
+   Send emails with all changes
+   Store "last notification time" into <store_folder> \ <config_name.txt>
 
 3. View database changes ( )
 
-a) Storage Folder  (storage_folder)   ??????
-b) Database Filter (db_filter)
-c) From/To timestamps
+   a) Storage Folder  (storage_folder)   ??????
+   b) Database Filter (db_filter)
+   c) From/To timestamps
 
-Tool loads all databases by db_filter from inventory
-Search for diffs and **messages** at folder (<store_folder> \ <server> \ <database>) that are between from/to timestamps
-If multiple changes / issues fround per database - show them together
+   Tool loads all databases by db_filter from inventory
+   Search for diffs and **messages** at folder (<store_folder> \ <server> \ <database>) that are between from/to timestamps
+   If multiple changes / issues fround per database - show them together
