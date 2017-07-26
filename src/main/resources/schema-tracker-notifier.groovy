@@ -1,15 +1,16 @@
 import java.text.SimpleDateFormat
+import java.text.DateFormat
+import java.util.Locale
+import javax.mail.Message.RecipientType
 
 import com.branegy.dbmaster.model.*
 import com.branegy.dbmaster.sync.api.*
 import com.branegy.email.EmailSender
-import org.apache.commons.io.*
-import javax.mail.Message.RecipientType
-import java.text.DateFormat
-import java.util.Locale
 import com.branegy.service.base.api.ProjectService
-import org.apache.commons.io.IOUtils
 import com.branegy.tools.impl.presenter.DirectHmltDataPresenter
+
+import org.apache.commons.io.*
+import org.apache.commons.io.IOUtils
 import org.apache.commons.io.Charsets
 
 
@@ -21,19 +22,20 @@ def stringToFile = { file, content ->
     return FileUtils.writeStringToFile(file, content, Charsets.UTF_8)
 }
 
-Date versionA = null;
-Date versionB = null;
-Date version = new Date();
-def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff";
+Date versionA = null
+Date versionB = null
+Date version = new Date()
+def p_storage_folder = com.branegy.util.DataDirHelper.getDataDir()+"/schema-diff"
 
 def sdf = new SimpleDateFormat("yyyyMMdd_HHmmss")
-def configFile = new File(p_storage_folder + "/" + p_config_name);
-if (configFile.exists() && configFile.isFile()){
+def configFile = new File(p_storage_folder + "/" + p_config_name)
+
+if (configFile.exists() && configFile.isFile()) {
    versionA = sdf.parse(fileToString(configFile));
 }
 
 String emailBody = new MassSchemaDiffHistory(logger, versionA, versionB, dbm)
-    .getHistory(p_database_query,p_storage_folder)
+    .getHistory(p_database_query, p_storage_folder)
     
 
 stringToFile(configFile, sdf.format(version));

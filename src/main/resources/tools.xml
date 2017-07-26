@@ -86,4 +86,46 @@
         <output  script="model-diff.groovy" type="html" />
     </tool>
 
+
+
+    <tool id="schema-tracker-snapshot-maker" title="Schema Tracker::Snapshot Maker" projectTypes="inventory">
+
+    <!-- TODO: add parameters like ignore dbs that are not online -->
+
+        <description>TMass Database Synchronization</description>
+        <parameters>
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+            <parameter name="p_ignore_nonOnlineDBs" type="boolean" required="true" 
+                       title="Ignore Non-Online Databases" defaultValue="true" />
+        </parameters>
+
+        <output  script="schema-tracker-snapshot-maker.groovy" type="html" />
+    </tool>
+    
+    <tool id="schema-tracker-notifier" title="Schema Tracker::Notifier" projectTypes="inventory">
+
+    <!-- TODO: ignore errors (when db is offline or is not accessible like mirrored one -->
+    <!-- TODO:  The purpose of this tool is to tell there are changes -->
+
+        <description>Mass Database Synchronization Notification</description>
+        <parameters>
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+            <parameter name="p_emails" type="string" required="true" title="Notify emails" width="400" />
+            <parameter name="p_notify_nochanges" type="boolean" required="false" title="Notify when no changes found" defaultValue="false" />
+            <parameter name="p_config_name" type="string" required="true" title="Config name" width="400" />
+        </parameters>
+
+        <output  script="schema-tracker-notifier.groovy" type="html" />
+    </tool>
+    
+    <tool id="schema-tracker-change-report" title="Schema Tracker::Change Report" projectTypes="inventory">
+        <description>Displays schema(s) change history</description>
+        <parameters>
+            <parameter name="p_database_query" type="string" required="false" title="Database Filter" width="400" />
+            <parameter name="p_from_date" type="date" required="false" title="From"/>
+            <parameter name="p_to_date" type="date" required="false" title="To" />
+        </parameters>
+        <output  script="schema-tracker-change-report.groovy" type="html" />
+    </tool>
+
 </tools>
