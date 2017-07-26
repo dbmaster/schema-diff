@@ -29,6 +29,9 @@
             </parameter>
 
               -->
+              
+            <parameter name="p_ignore_objects" title="Ignore Objects"   
+                       type="string" required="false" />
         </parameters>
         <output  script="schema-diff.groovy" type="html" />
     </tool>
