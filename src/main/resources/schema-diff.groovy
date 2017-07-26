@@ -1,8 +1,13 @@
 import com.branegy.dbmaster.database.api.ModelService
 import com.branegy.dbmaster.model.*
+
 import io.dbmaster.sync.*
+
 import com.branegy.dbmaster.sync.api.SyncService
+
 import java.util.regex.*
+
+import org.apache.commons.lang.StringUtils;
 
 modelService = dbm.getService(ModelService.class)
 
@@ -146,7 +151,115 @@ def ignoreObjects(String ignoreObjects, Model source,Model target) {
     }
 }
 
+def normalizeSource = {Model model ->
+    Matcher matcher = Pattern.compile(
+        "^\\s*"
+        +"create"
+        +"\\s+"
+        +"(?<type>view|function|procedure)"
+        +"\\s+"
+            // scheme
+            +"(?:"                          
+                +"(?<schema>"
+                     +"(?:\\[[^\\]]+\\])" // [name]
+                     +"|"                 // or
+                     +"(?:\"[^\"]+\")"    // "name"
+                     +"|"                 // or   
+                     +"[^\\.]+"           // any-string
+                +")"
+                +"\\."
+            +")?"
+            // name
+            +"(?<name>"
+                 +"(?:\\[[^\\]]+\\])" // [name]
+                 +"|"                 // or
+                 +"(?:\"[^\"]+\")"    // "name"
+                 +"|"                 // or
+                 +"[^\\s(]+"          // any-string
+            +")"
+            +"\\s*(?<suffix>\\(.*?\\))?" // (..) optional
+            +"\\s*(?<other>.+?)\\s*"
+        +"\$"
+            //create view dbo.name
+            //create view name
+            //create view [dbo].name
+            //create view [name]
+            //create view "name"
+            //create view otherschemaname.objectname
+            //create function [dbo].[Func1]()
+            //create function Func2()
+            //Create function dbo.Func3()
+            //Create function [dbo].Func4()
+            //CREATE function dbo.[Func5]()
+            //CREATE function dbo.[Function with spaces]()
+            //create procedure dbo.Proc1
+        ,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL).matcher("");
+    
+    def strip = {String name ->
+        name = StringUtils.strip(name,"[]\"");
+        if (name.contains(" ")) {
+            name = '['+name+ ']';
+        }
+        return name;
+    }
+    
+    String defaultSchema = StringUtils.isEmpty(p_default_schema)?"dbo":strip(StringUtils.stripEnd(p_default_schema,"."));
+    StringBuilder builder = new StringBuilder(64*1024);
+    def normalize = {ModelObject object ->
+        if (!matcher.reset(object.source).matches()) {
+            return;
+        } 
+        
+        String type = matcher.group("type");
+        String schema = matcher.group("schema");
+        String name = matcher.group("name");
+        String suffix = matcher.group("suffix");
+        String other = matcher.group("other");
+        
+        builder.setLength(0);
+        builder.append("create ");
+        builder.append(type);
+        builder.append(' ');
+        if (schema == null) {
+            builder.append(defaultSchema);
+        } else {
+            builder.append(strip(schema));
+        }
+        builder.append('.');
+        builder.append(strip(name));
+        if (suffix == null) {
+            if (type == "function" || type == "procedure") {
+                builder.append("()");
+            }
+        } else {
+            builder.append('(');
+            builder.append(suffix.substring(1,suffix.length()-1).trim());
+            builder.append(')');
+        }
+        builder.append(' ');
+        builder.append(other);
+        
+        object.source = builder.toString();
+    }
+    
+    
+    for (view in model.views) {
+        normalize(view);
+    }
+    for (function in model.functions) {
+        normalize(function);
+    }
+    for (procedure in model.procedures) {
+        normalize(procedure);
+    }
+}
+
+
 ignoreObjects(p_ignore_objects,sourceModel,targetModel);
+if (p_preprocessing.contains("Normalize source code")) {
+    normalizeSource(sourceModel);
+    normalizeSource(targetModel);
+}
 
 logger.info("Comparing databases")
 def sync_session = modelService.compareModel(sourceModel, targetModel)

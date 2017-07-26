@@ -32,6 +32,16 @@
               
             <parameter name="p_ignore_objects" title="Ignore Objects"   
                        type="string" required="false" />
+                       
+            <parameter name="p_preprocessing" title="Options" type="string" required="false"
+                       multiple="true">
+                <values>
+                    <string>Normalize source code</string>
+                </values>
+            </parameter>     
+            
+            <parameter name="p_default_schema" title="Default Schema"   
+                       type="string" required="false" />
         </parameters>
         <output  script="schema-diff.groovy" type="html" />
     </tool>
