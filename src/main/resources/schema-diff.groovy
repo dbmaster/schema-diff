@@ -225,8 +225,8 @@ def normalizeSource = {Model model ->
         ,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL).matcher("");
     
     def strip = {String name ->
-        name = StringUtils.strip(name,"[]\"");
-        if (name.contains(" ")) {
+        name = StringUtils.strip(name,"\"");
+        if (!name.startsWith("[")){
             name = '['+name+ ']';
         }
         return name;
@@ -256,6 +256,7 @@ def normalizeSource = {Model model ->
         builder.setLength(0);
         if (header!=null) {
             builder.append(header.trim());
+            builder.append("\r\n");
         }
         builder.append("create ");
         builder.append(type);
@@ -307,11 +308,23 @@ def normalizeSource = {Model model ->
     }
 }
 
+def ignoreViewColumns = {Model model ->
+    for (View view in model.views) {
+        while (!view.columns.isEmpty()) {
+            view.removeColumn(view.columns.get(view.columns.size()-1));
+        }
+    }
+}
+
 
 ignoreObjects(p_ignore_objects,sourceModel,targetModel);
 if (p_preprocessing.contains("Normalize source code")) {
     normalizeSource(sourceModel);
     normalizeSource(targetModel);
+}
+if (p_preprocessing.contains("Ignore view columns")) {
+    ignoreViewColumns(sourceModel);
+    ignoreViewColumns(targetModel);
 }
 
 logger.info("Comparing databases")

@@ -34,6 +34,7 @@
                        multiple="true">
                 <values>
                     <string>Normalize source code</string>
+                    <string>Ignore view columns</string>
                 </values>
             </parameter>     
             
