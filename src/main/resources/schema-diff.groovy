@@ -76,7 +76,7 @@ def ignoreObjects(String ignoreObjects, Model source,Model target) {
         }
         
         Matcher tokenMatcher = Pattern.compile("(table|view|procedure|function)\\s*:\\s*(.+)",Pattern.CASE_INSENSITIVE).matcher("");
-        ignoreObjects.split(",").each{ token ->
+        ignoreObjects.split(",|\r\n|\n").each{ token ->
             token = token.trim();
             if (tokenMatcher.reset(token).matches()) { // by type
                 def type  = tokenMatcher.group(1).toLowerCase();
@@ -153,10 +153,10 @@ def ignoreObjects(String ignoreObjects, Model source,Model target) {
 
 def normalizeSource = {Model model ->
     Matcher matcher = Pattern.compile(
-        "^\\s*"
+         "^(?<header>.*)"
         +"create"
         +"\\s+"
-        +"(?<type>view|function|procedure)"
+        +"(?<type>view|function|procedure|trigger)"
         +"\\s+"
             // scheme
             +"(?:"                          
@@ -165,7 +165,7 @@ def normalizeSource = {Model model ->
                      +"|"                 // or
                      +"(?:\"[^\"]+\")"    // "name"
                      +"|"                 // or   
-                     +"[^\\.]+"           // any-string
+                     +"[^\\.\\s]+"           // any-string
                 +")"
                 +"\\."
             +")?"
@@ -177,7 +177,34 @@ def normalizeSource = {Model model ->
                  +"|"                 // or
                  +"[^\\s(]+"          // any-string
             +")"
-            +"\\s*(?<suffix>\\(.*?\\))?" // (..) optional
+            +"\\s*"
+            +"(?:"
+                // trigger on
+                +"(?:on\\s+" 
+                    // scheme
+                    +"(?:"
+                        +"(?<tschema>"
+                             +"(?:\\[[^\\]]+\\])" // [name]
+                             +"|"                 // or
+                             +"(?:\"[^\"]+\")"    // "name"
+                             +"|"                 // or
+                             +"[^\\.\\s]+"           // any-string
+                        +")"
+                        +"\\."
+                    +")?"
+                    // name
+                    +"(?<tname>"
+                         +"(?:\\[[^\\]]+\\])" // [name]
+                         +"|"                 // or
+                         +"(?:\"[^\"]+\")"    // "name"
+                         +"|"                 // or
+                         +"[^\\s]+"           // any-string
+                    +")"
+                    +"\\s+"
+                +")"
+                +"|"
+                +"(?:(?<suffix>\\(.*?\\))?)" // (..) optional
+            +")"
             +"\\s*(?<other>.+?)\\s*"
         +"\$"
             //create view dbo.name
@@ -193,6 +220,8 @@ def normalizeSource = {Model model ->
             //CREATE function dbo.[Func5]()
             //CREATE function dbo.[Function with spaces]()
             //create procedure dbo.Proc1
+            // -- asdas \n create function Func2()
+            //create trigger dbo.Func on F2 ...
         ,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL).matcher("");
     
     def strip = {String name ->
@@ -205,23 +234,29 @@ def normalizeSource = {Model model ->
     
     String defaultSchema = StringUtils.isEmpty(p_default_schema)?"dbo":strip(StringUtils.stripEnd(p_default_schema,"."));
     StringBuilder builder = new StringBuilder(64*1024);
-    def normalize = {ModelObject object ->
-	if (object.source == null) {
-            // TODO Log a warning message
- 	    return;
+    def normalize = {DatabaseObject<?> object ->
+        if (object.source == null) {
+            logger.warn("The source is not found for "+object.name);
+            return;
         }
 
         if (!matcher.reset(object.source).matches()) {
             return;
         } 
         
-        String type = matcher.group("type");
+        String header = matcher.group("header");
+        String type = matcher.group("type").toLowerCase();
         String schema = matcher.group("schema");
         String name = matcher.group("name");
+        String triggerSchema = matcher.group("tschema");
+        String triggerName = matcher.group("tname");
         String suffix = matcher.group("suffix");
         String other = matcher.group("other");
         
         builder.setLength(0);
+        if (header!=null) {
+            builder.append(header.trim());
+        }
         builder.append("create ");
         builder.append(type);
         builder.append(' ');
@@ -235,6 +270,15 @@ def normalizeSource = {Model model ->
         if (suffix == null) {
             if (type == "function" || type == "procedure") {
                 builder.append("()");
+            } else if (type == "trigger") {
+                builder.append(" on ");
+                if (triggerSchema == null) {
+                    builder.append(defaultSchema);
+                } else {
+                    builder.append(strip(triggerSchema));
+                }
+                builder.append('.');
+                builder.append(strip(triggerName));
             }
         } else {
             builder.append('(');
@@ -247,7 +291,11 @@ def normalizeSource = {Model model ->
         object.source = builder.toString();
     }
     
-    
+    for (table in model.tables) {
+        for (trigger in table.triggers) {
+            normalize(trigger);
+        }
+    }
     for (view in model.views) {
         normalize(view);
     }

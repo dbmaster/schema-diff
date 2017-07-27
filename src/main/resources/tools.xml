@@ -29,9 +29,6 @@
             </parameter>
 
               -->
-              
-            <parameter name="p_ignore_objects" title="Ignore Objects"   
-                       type="string" required="false" />
                        
             <parameter name="p_preprocessing" title="Options" type="string" required="false"
                        multiple="true">
@@ -42,6 +39,9 @@
             
             <parameter name="p_default_schema" title="Default Schema"   
                        type="string" required="false" />
+                       
+            <parameter name="p_ignore_objects" title="Ignore Objects"   
+                       type="text" required="false"  width="100" height="3" />
         </parameters>
         <output  script="schema-diff.groovy" type="html" />
     </tool>
