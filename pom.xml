@@ -6,9 +6,9 @@
    <artifactId>schema-diff</artifactId>
 
    <name>Schema Diff</name>
-   <description>Provides tool to compare and track changes of database structures</description>
+   <description>Tools to compare and track changes of database structures</description>
 
-   <version>1.0.37</version>
+   <version>1.0.38</version>
    <packaging>bundle</packaging>
 
    <parent>

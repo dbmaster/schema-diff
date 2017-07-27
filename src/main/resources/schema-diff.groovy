@@ -206,6 +206,11 @@ def normalizeSource = {Model model ->
     String defaultSchema = StringUtils.isEmpty(p_default_schema)?"dbo":strip(StringUtils.stripEnd(p_default_schema,"."));
     StringBuilder builder = new StringBuilder(64*1024);
     def normalize = {ModelObject object ->
+	if (object.source == null) {
+            // TODO Log a warning message
+ 	    return;
+        }
+
         if (!matcher.reset(object.source).matches()) {
             return;
         } 
