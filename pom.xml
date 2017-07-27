@@ -8,7 +8,7 @@
    <name>Schema Diff</name>
    <description>Tools to compare and track changes of database structures</description>
 
-   <version>1.0.40</version>
+   <version>1.0.41</version>
    <packaging>bundle</packaging>
 
    <parent>

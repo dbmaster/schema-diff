@@ -7,6 +7,7 @@ import com.branegy.dbmaster.sync.api.SyncService
 
 import java.util.regex.*
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 modelService = dbm.getService(ModelService.class)
@@ -153,7 +154,7 @@ def ignoreObjects(String ignoreObjects, Model source,Model target) {
 
 def normalizeSource = {Model model ->
     Matcher matcher = Pattern.compile(
-         "^(?<header>.*)"
+         "^(?<header>.*?)"
         +"create"
         +"\\s+"
         +"(?<type>view|function|procedure|trigger)"
@@ -177,10 +178,9 @@ def normalizeSource = {Model model ->
                  +"|"                 // or
                  +"[^\\s(]+"          // any-string
             +")"
-            +"\\s*"
             +"(?:"
                 // trigger on
-                +"(?:on\\s+" 
+                +"(?:\\s*on\\s+" 
                     // scheme
                     +"(?:"
                         +"(?<tschema>"
@@ -203,7 +203,7 @@ def normalizeSource = {Model model ->
                     +"\\s+"
                 +")"
                 +"|"
-                +"(?:(?<suffix>\\(.*?\\))?)" // (..) optional
+                +"(?:(?<suffix>\\s*\\(.*?\\))?)" // (..) optional
             +")"
             +"\\s*(?<other>.+?)\\s*"
         +"\$"
@@ -232,7 +232,7 @@ def normalizeSource = {Model model ->
         return name;
     }
     
-    String defaultSchema = StringUtils.isEmpty(p_default_schema)?"dbo":strip(StringUtils.stripEnd(p_default_schema,"."));
+    String defaultSchema = StringUtils.isEmpty(p_default_schema)?"[dbo]":strip(StringUtils.stripEnd(p_default_schema,"."));
     StringBuilder builder = new StringBuilder(64*1024);
     def normalize = {DatabaseObject<?> object ->
         if (object.source == null) {
