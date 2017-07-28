@@ -35,6 +35,7 @@
                 <values>
                     <string>Normalize source code</string>
                     <string>Ignore view columns</string>
+                    <string>Ignore whitespaces</string>
                 </values>
             </parameter>     
             
