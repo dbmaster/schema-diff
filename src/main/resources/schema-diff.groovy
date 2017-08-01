@@ -12,11 +12,11 @@ import org.apache.commons.lang.StringUtils;
 
 modelService = dbm.getService(ModelService.class)
 
-def source_server =   p_source_database.split("\\.",2)[0]
-def source_database = p_source_database.split("\\.",2)[1]
+def source_server   = p_source_connection
+def source_database = p_source_connection_db
 
-def target_server =   p_target_database.split("\\.",2)[0]
-def target_database = p_target_database.split("\\.",2)[1]
+def target_server   = p_target_connection
+def target_database = p_target_connection_db
 
 
 RevEngineeringOptions source_options = new RevEngineeringOptions()
@@ -166,7 +166,7 @@ def normalizeSource = {Model model ->
                      +"|"                 // or
                      +"(?:\"[^\"]+\")"    // "name"
                      +"|"                 // or   
-                     +"[^\\.\\s]+"           // any-string
+                     +"[^\\.\\s]+"        // any-string
                 +")"
                 +"\\."
             +")?"
@@ -188,7 +188,7 @@ def normalizeSource = {Model model ->
                              +"|"                 // or
                              +"(?:\"[^\"]+\")"    // "name"
                              +"|"                 // or
-                             +"[^\\.\\s]+"           // any-string
+                             +"[^\\.\\s]+"        // any-string
                         +")"
                         +"\\."
                     +")?"
@@ -203,7 +203,18 @@ def normalizeSource = {Model model ->
                     +"\\s+"
                 +")"
                 +"|"
-                +"(?:(?<suffix>\\s*\\(.*?\\))?)" // (..) optional
+                +"(?:(?<suffix>"              // (..(),()) optional
+                    +"\\s*\\("                // 
+                        + "(?:"
+                            +"[^(]*"          // non (
+                            +"\\("            // (
+                            +"[^)]*"          // non )
+                            +"\\)"            // ) 
+                        + ")*"                  
+                        + "[^)]*"             // other
+                        +"\\)"                // )
+                    +")?"
+                +")" 
             +")"
             +"\\s*(?<other>.+?)\\s*"
         +"\$"

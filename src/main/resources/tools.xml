@@ -3,17 +3,21 @@
 
         <description>Compares structures of two databases</description>
         <parameters>
-            <parameter name="p_source_database" title="Source Database" type="string" 
-                       required="true"  suggestion="project_databases" width="400"  />
-
-            <parameter name="p_target_database" title="Target Database" 
-                       type="string" required="true"  
-                       suggestion="project_databases" width="400"  />
+            <parameter name="p_source_connection" title="Source Connection" type="string" 
+                       required="true"  suggestion="project_connections" />     
+            <parameter name="p_source_connection_db" title="Source Database" type="string" 
+                       required="true"  suggestion="connection_databases" disableSuggestionCache="true"/>  
+                       
+            <parameter name="p_target_connection" title="Target Connection" type="string" 
+                       required="true"  suggestion="project_connections" />     
+            <parameter name="p_target_connection_db" title="Target Database" type="string" 
+                       required="true"  suggestion="connection_databases" disableSuggestionCache="true"/>             
+                       
 
             <parameter name="p_show_changes_only" title="Show Changes Only" 
                        type="boolean" required="true"  defaultValue="false" />
-
-          <!--
+                       
+            <!--
             <parameter name="p_exclude_objects" title="Exclude Objects" type="string" required="false"
                        multiple="true">
                 <values>
@@ -27,8 +31,7 @@
                     <string>Foreign Keys</string>
                 </values>
             </parameter>
-
-              -->
+            -->
                        
             <parameter name="p_preprocessing" title="Options" type="string" required="false"
                        multiple="true">
