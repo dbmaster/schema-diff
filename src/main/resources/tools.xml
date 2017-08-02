@@ -39,6 +39,7 @@
                     <string>Normalize source code</string>
                     <string>Ignore view columns</string>
                     <string>Ignore whitespaces</string>
+                    <string>Ignore column order changes</string>
                 </values>
             </parameter>     
             

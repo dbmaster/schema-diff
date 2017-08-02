@@ -338,9 +338,10 @@ if (p_preprocessing.contains("Ignore view columns")) {
     ignoreViewColumns(targetModel);
 }
 def ignoreWhitespaces = p_preprocessing.contains("Ignore whitespaces");
+def ignoreColumnOrderChanges = p_preprocessing.contains("Ignore column order changes");
 
 logger.info("Comparing databases")
-def sync_session = modelService.compareObjects(sourceModel, targetModel, [ignoreWhitespaces:ignoreWhitespaces])
+def sync_session = modelService.compareObjects(sourceModel, targetModel, [ignoreWhitespaces:ignoreWhitespaces,ignoreColumnOrderChanges:ignoreColumnOrderChanges])
 
 logger.info("Generating report")
 def service = dbm.getService(SyncService.class)
