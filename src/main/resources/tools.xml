@@ -34,12 +34,14 @@
             -->
                        
             <parameter name="p_preprocessing" title="Options" type="string" required="false"
-                       multiple="true">
+                       multiple="true" width="300">
                 <values>
                     <string>Normalize source code</string>
                     <string>Ignore view columns</string>
                     <string>Ignore whitespaces</string>
                     <string>Ignore column order changes</string>
+                    <string>Ignore Renamed CK</string>
+                    <string>Ignore Renamed Indexes</string>
                 </values>
             </parameter>     
             

@@ -339,9 +339,16 @@ if (p_preprocessing.contains("Ignore view columns")) {
 }
 def ignoreWhitespaces = p_preprocessing.contains("Ignore whitespaces");
 def ignoreColumnOrderChanges = p_preprocessing.contains("Ignore column order changes");
+def ignoreRenamedCKs = p_preprocessing.contains("Ignore Renamed CKs");
+def ignoreRenamedIndexes = p_preprocessing.contains("Ignore Renamed Indexes");
 
 logger.info("Comparing databases")
-def sync_session = modelService.compareObjects(sourceModel, targetModel, [ignoreWhitespaces:ignoreWhitespaces,ignoreColumnOrderChanges:ignoreColumnOrderChanges])
+def sync_session = modelService.compareObjects(sourceModel, targetModel, 
+    [ignoreWhitespaces:ignoreWhitespaces,
+     ignoreColumnOrderChanges:ignoreColumnOrderChanges,
+     ignoreRenamedCKs:ignoreRenamedCKs,
+     ignoreRenamedIndexes:ignoreRenamedIndexes
+    ])
 
 logger.info("Generating report")
 def service = dbm.getService(SyncService.class)
