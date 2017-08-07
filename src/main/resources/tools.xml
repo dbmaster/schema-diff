@@ -40,7 +40,7 @@
                     <string>Ignore view columns</string>
                     <string>Ignore whitespaces</string>
                     <string>Ignore column order changes</string>
-                    <string>Ignore Renamed CK</string>
+                    <string>Ignore Renamed CKs</string>
                     <string>Ignore Renamed Indexes</string>
                 </values>
             </parameter>     
