@@ -4,14 +4,14 @@
         <description>Compares structures of two databases</description>
         <parameters>
             <parameter name="p_source_connection" title="Source Connection" type="string" 
-                       required="true"  suggestion="project_connections" />     
+                       required="true"  suggestion="project_connections" width="250"/>     
             <parameter name="p_source_connection_db" title="Source Database" type="string" 
-                       required="true"  suggestion="connection_databases" disableSuggestionCache="true"/>  
+                       required="true"  suggestion="connection_databases" width="250" disableSuggestionCache="true"/>  
                        
             <parameter name="p_target_connection" title="Target Connection" type="string" 
-                       required="true"  suggestion="project_connections" />     
+                       required="true"  suggestion="project_connections" width="250"/>     
             <parameter name="p_target_connection_db" title="Target Database" type="string" 
-                       required="true"  suggestion="connection_databases" disableSuggestionCache="true"/>             
+                       required="true"  suggestion="connection_databases" width="250" disableSuggestionCache="true"/>             
                        
 
             <parameter name="p_show_changes_only" title="Show Changes Only" 
@@ -34,7 +34,7 @@
             -->
                        
             <parameter name="p_preprocessing" title="Options" type="string" required="false"
-                       multiple="true" width="300">
+                       multiple="true" width="250">
                 <values>
                     <string>Normalize source code</string>
                     <string>Ignore view columns</string>
@@ -46,7 +46,7 @@
             </parameter>     
             
             <parameter name="p_default_schema" title="Default Schema"   
-                       type="string" required="false" />
+                       type="string" required="false" width="100" />
                        
             <parameter name="p_ignore_objects" title="Ignore Objects"   
                        type="text" required="false"  width="100" height="3" />
