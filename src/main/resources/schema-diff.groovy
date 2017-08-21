@@ -319,6 +319,48 @@ def normalizeSource = {Model model ->
     }
 }
 
+def normalizeExtraBrackets = { Model model ->
+    if (model == null) {
+        return;
+    }
+    
+    final Matcher NORMALIZE_BRACKETS_MATCHER = Pattern.compile("\\(\\s*([+-]?\\d+)\\s*\\)").matcher("");
+    final StringBuffer sb = new StringBuffer(16*1024);
+    
+    def normalize = { String code ->
+        if (code == null) {
+            return code;
+        }
+        while (true) {
+            NORMALIZE_BRACKETS_MATCHER.reset(code);
+            if (!NORMALIZE_BRACKETS_MATCHER.find()) {
+                return code;
+            }
+            sb.setLength(0);
+            NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, "\$1");
+            while (NORMALIZE_BRACKETS_MATCHER.find()) {
+                NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, "\$1");
+            }
+            NORMALIZE_BRACKETS_MATCHER.appendTail(sb);
+            code = sb.toString();
+        }
+    };
+    
+    String tmp; 
+    for (table in model.tables) {
+        for (column in table.columns) {
+            if (column.defaultValue!=(tmp = normalize(column.defaultValue))) {
+                column.defaultValue = tmp;
+            }
+        }
+        for (constraint in table.constraints) {
+            if (constraint.definition!=(tmp = normalize(constraint.definition))) {
+                constraint.definition = tmp;
+            }
+        }
+    }
+}
+
 def ignoreViewColumns = {Model model ->
     for (View view in model.views) {
         while (!view.columns.isEmpty()) {
@@ -332,6 +374,10 @@ ignoreObjects(p_ignore_objects,sourceModel,targetModel);
 if (p_preprocessing.contains("Normalize source code")) {
     normalizeSource(sourceModel);
     normalizeSource(targetModel);
+}
+if (p_preprocessing.contains("Normalize extra ()")) {
+    normalizeExtraBrackets(sourceModel);
+    normalizeExtraBrackets(targetModel);
 }
 if (p_preprocessing.contains("Ignore view columns")) {
     ignoreViewColumns(sourceModel);

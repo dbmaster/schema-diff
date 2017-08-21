@@ -37,6 +37,7 @@
                        multiple="true" width="250">
                 <values>
                     <string>Normalize source code</string>
+                    <string>Normalize extra ()</string>
                     <string>Ignore view columns</string>
                     <string>Ignore whitespaces</string>
                     <string>Ignore column order changes</string>
