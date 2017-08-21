@@ -324,8 +324,58 @@ def normalizeExtraBrackets = { Model model ->
         return;
     }
     
-    final Matcher NORMALIZE_BRACKETS_MATCHER = Pattern.compile("\\(\\s*([+-]?\\d+)\\s*\\)").matcher("");
+    final Matcher NORMALIZE_BRACKETS_MATCHER = Pattern.compile(
+        "\\(\\s*"
+            +"("
+                +"[+-]?"
+                +"(?:"
+                    +"\\.\\d+"                    // .y
+                    +"|"
+                    +"\\d+\\."                    // x.  
+                    +"|"
+                    +"\\d+"                       // x
+                    +"|"
+                    +"\\d+\\.\\d+"                // x.y
+                 +")"
+            +")"
+        +"\\s*\\)").matcher("");
     final StringBuffer sb = new StringBuffer(16*1024);
+    
+    def normalizeNumber = {String number -> 
+        if (number.charAt(0) == '+') {
+            number = number.substring(1);
+        }
+        boolean negative = false;
+        try {
+            if (number.charAt(0) == '-') {
+                negative = true;
+                number = number.substring(1);
+            }
+            long i;
+            long f;
+            int dot = number.indexOf('.');
+            if (dot == number.length()-1) { // x.
+                i = Long.parseLong(number.substring(0,dot));
+                f = 0L;
+            } else if (dot==0) {            // .y
+                i = 0L;
+                f = Long.parseLong(StringUtils.defaultIfEmpty(StringUtils.stripEnd(number.substring(1),"0"),"0"));
+            } else if (dot>0) {             // x.y
+                i = Long.parseLong(number.substring(0,dot));
+                f = Long.parseLong(StringUtils.defaultIfEmpty(StringUtils.stripEnd(number.substring(dot+1),"0"),"0"));
+            } else {                        // x
+                i = Long.parseLong(number);
+                f = 0L;
+            }
+            if (f!=0L) {
+                return (negative?"-":"")+i+"."+f;
+            } else {
+                return ""+(negative?-i:i);
+            }
+        } catch (NumberFormatException e) {
+            return (negative?"-":"")+number;
+        }
+    };
     
     def normalize = { String code ->
         if (code == null) {
@@ -337,9 +387,10 @@ def normalizeExtraBrackets = { Model model ->
                 return code;
             }
             sb.setLength(0);
-            NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, "\$1");
+            
+            NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, normalizeNumber(NORMALIZE_BRACKETS_MATCHER.group(1)));
             while (NORMALIZE_BRACKETS_MATCHER.find()) {
-                NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, "\$1");
+                NORMALIZE_BRACKETS_MATCHER.appendReplacement(sb, normalizeNumber(NORMALIZE_BRACKETS_MATCHER.group(1)));
             }
             NORMALIZE_BRACKETS_MATCHER.appendTail(sb);
             code = sb.toString();
