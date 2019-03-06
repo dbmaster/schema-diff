@@ -14,8 +14,19 @@ def target_database = p_target_database.split("\\.")[1]
 
 RevEngineeringOptions source_options = new RevEngineeringOptions()
 source_options.database = source_database
-source_options.importViews = true
-source_options.importProcedures = true
+source_options.rawConfig =
+"+Table:*\n"+
+"+View:*\n"
+"+Function:*\n"+
+"+Procedure:*\n";
+"+Index:*\n"+
+"+Constraint:*\n"+
+"+Trigger:*\n"+
+"+ForeignKey:*\n"+
+"+SecurityObject:*\n"+
+"+Column:*\n"+
+"+Parameter:*\n"+
+"+ExtendedProperty:*";
 
 logger.info("Loading source database")
 
@@ -23,8 +34,19 @@ sourceModel = modelService.fetchModel(source_server, source_options)
 
 RevEngineeringOptions target_options = new RevEngineeringOptions()
 target_options.database = target_database
-target_options.importViews = true
-target_options.importProcedures = true
+target_options.rawConfig =
+"+Table:*\n"+
+"+View:*\n"
+"+Function:*\n"+
+"+Procedure:*\n";
+"+Index:*\n"+
+"+Constraint:*\n"+
+"+Trigger:*\n"+
+"+ForeignKey:*\n"+
+"+SecurityObject:*\n"+
+"+Column:*\n"+
+"+Parameter:*";
+//"+ExtendedProperty:*";
 
 logger.info("Loading target database")
 targetModel = modelService.fetchModel(target_server, target_options)

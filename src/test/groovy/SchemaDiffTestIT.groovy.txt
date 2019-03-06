@@ -1,40 +1,27 @@
-import com.branegy.dbmaster.model.Model;
-import com.branegy.tools.api.HtmlPrinter;
-import com.branegy.tools.impl.presenter.DirectHmltDataPresenter;
-
-import groovy.io.FileType
-
-import com.branegy.inventory.api.InventoryService
-import com.branegy.dbmaster.database.api.ModelService
-import com.branegy.dbmaster.model.*
-import com.branegy.dbmaster.sync.api.*
-import com.branegy.dbmaster.sync.api.SyncPair.ChangeType;
-import com.branegy.service.connection.api.ConnectionService
-import com.branegy.service.connection.model.DatabaseConnection
-import com.branegy.service.core.exception.EntityNotFoundApiException;
-import com.branegy.dbmaster.connection.JDBCDialect
-import com.branegy.dbmaster.connection.Connector
-import com.branegy.dbmaster.connection.ConnectionProvider
-
-import org.slf4j.Logger
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils;
-
-import io.dbmaster.testng.BaseServiceTestNGCase;
-import io.dbmaster.testng.BaseToolTestNGCase;
-
-import java.io.File;
 import java.sql.Connection
 
 import javax.persistence.EntityManager;
 
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.inject.Inject;
 
+import com.branegy.dbmaster.connection.ConnectionProvider
+import com.branegy.dbmaster.database.api.ModelService
+import com.branegy.dbmaster.model.*
+import com.branegy.dbmaster.sync.api.*
+import com.branegy.dbmaster.sync.api.SyncPair.ChangeType;
+import com.branegy.inventory.api.InventoryService
 import com.branegy.persistence.update.SqlExec
+import com.branegy.service.connection.api.ConnectionService
+import com.branegy.service.connection.model.DatabaseConnection
+import com.branegy.service.core.exception.EntityNotFoundApiException;
+import com.branegy.tools.impl.presenter.DirectHmltDataPresenter;
+
+import io.dbmaster.testng.BaseServiceTestNGCase;
 
 
 public class SchemaDiffTestIT extends BaseServiceTestNGCase{
@@ -53,9 +40,7 @@ public class SchemaDiffTestIT extends BaseServiceTestNGCase{
     def runSQL = { connectionName, targetDB, fileName  ->
         DatabaseConnection dbConnection = connectionSrv.findByName(connectionName)
 
-        Connector connector = ConnectionProvider.getConnector(dbConnection)
-        JDBCDialect dialect = (JDBCDialect)connector.connect()
-        Connection connection = dialect.getProvider().getJdbcConnection(targetDB)
+        Connection connection = ConnectionProvider.get().getJdbcConnection(dbConnection,targetDB)
         try{
             connection.setAutoCommit(true)
             new SqlExec().execute(FileUtils.readFileToString(new File(fileName),"UTF-8"), connection)

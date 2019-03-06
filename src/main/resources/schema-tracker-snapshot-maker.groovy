@@ -91,10 +91,19 @@ for (Database db:invService.getDatabaseList(new QueryRequest(p_database_query)))
 
         RevEngineeringOptions options = new RevEngineeringOptions()
         options.database = db.getDatabaseName()
-
-        // TODO move to parameters
-        options.importViews = true
-        options.importProcedures = true
+        options.rawConfig =
+        "+Table:*\n"+
+        "+View:*\n"
+        "+Function:*\n"+
+        "+Procedure:*\n";
+        "+Index:*\n"+
+        "+Constraint:*\n"+
+        "+Trigger:*\n"+
+        "+ForeignKey:*\n"+
+        "+SecurityObject:*\n"+
+        "+Column:*\n"+
+        "+Parameter:*";
+        //"+ExtendedProperty:*";
         
         logger.debug("Loading schema ${db.getDatabaseName()} from database server")
 
